@@ -1,0 +1,78 @@
+/* General Blueprint Style */
+
+@font-face {
+	font-family: 'bpicons';
+	font-weight: normal;
+	font-style: normal;
+	src: url('../fonts/bpicons/bpicons.eot');
+	src: url('../fonts/bpicons/bpicons.eot?#iefix') format('embedded-opentype'), url('../fonts/bpicons/bpicons.woff') format('woff'), url('../fonts/bpicons/bpicons.ttf') format('truetype'), url('../fonts/bpicons/bpicons.svg#bpicons') format('svg');
+}/* Made with http://icomoon.io/ */
+
+
+/* Resets */
+
+*,
+*:after,
+*:before {
+	box-sizing: border-box;
+}
+
+
+/* Main styles */
+
+body {
+	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+	overflow: hidden;
+	margin: 0;
+	color: #cecece;
+	background: #2a2b30;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a {
+	text-decoration: none;
+	color: #fff;
+	outline: none;
+}
+
+a:hover {
+	color: #ddd;
+}
+
+.container {
+	overflow-y: auto;
+	height: 100vh;
+}
+
+
+/* Blueprint header */
+
+
+.content {
+	position: relative;
+	min-height: 300px;
+	margin: 0 0 0 300px;
+}
+
+.info {
+	font-size: 1.1em;
+	font-weight: bold;
+	padding: 20vh 1em 0;
+	text-align: center;
+	color: #47484c;
+}
+
+
+
+@media screen and (max-width: 40em) {
+	
+	.content {
+		margin: 0;
+	}
+	body,
+	.container {
+		height: auto;
+		overflow: auto;
+	}
+}
