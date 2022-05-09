@@ -8,7 +8,6 @@
             "email": "dmturov@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "src\\": "src/",
@@ -22,7 +21,6 @@
       "ext-json": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.1",
-        "phpunit/dbunit": "^3.0"
+        "phpunit/phpunit": "^6.1"
     }
 }
