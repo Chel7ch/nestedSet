@@ -1,12 +1,12 @@
 <?php
 
-namespace src;
+namespace Chel7ch\NestedSets;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 class Categories extends Trees
 {
-    public function moveBranch($node, $newParent): void
+    public function moveNode($node, $newParent): void
     {
         if ($node->lk > $newParent->lk) {
             $this->moveToUp($node, $newParent);

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace src;
+namespace Chel7ch\NestedSets;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 

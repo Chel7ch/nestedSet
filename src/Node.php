@@ -1,17 +1,14 @@
 <?php
 
-namespace src;
+namespace Chel7ch\NestedSets;
 
-use src\models\Category;
+use Chel7ch\NestedSets\Models\Category;
 
 class Node implements NodeI
 {
-    public static $node;
 
-    public function prepare($prop)//!!!!!!!!!
+    public function prepare($prop)
     {
-        if (empty($prop['lk']))return ;//!!!!!!
-
         if (!empty($prop['id']) &&
             null !== $node = $this->query('id', $prop['id'])) {
             return $node;
@@ -24,7 +21,7 @@ class Node implements NodeI
             null !== $node = $this->query('rk', $prop['rk'])) {
             return $node;
         }
-//        throw new \InvalidArgumentException("Missing or wrong  input parameters ");
+        throw new \InvalidArgumentException("Missing or wrong  input parameters ");
     }
 
     public function query($key, $value)

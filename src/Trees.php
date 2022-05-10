@@ -1,72 +1,75 @@
 <?php
 
-namespace src;
+namespace Chel7ch\NestedSets;
 
+use Chel7ch\NestedSets\Models\Category;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use src\models\Category;
+use Illuminate\Support\Facades\DB;
 
 abstract class Trees implements TreesI
 {
-
-//1. само дерево:
-    public function getTree()
+    protected static function getTableName(): string
     {
-        return Category::select()
+        return 'categories';
+    }
+
+    public function getTree(): object
+    {
+        return DB::table(self::getTableName())
             ->orderBy('lk')
             ->get();
     }
 
-//2. Выбор подчиненных узлов с узлом
     public function getDescendantNode($node)
     {
-        return Category::where('lk', '>=', $node->lk)
+        return DB::table(self::getTableName())
+            ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->orderBy('lk')
             ->get();
     }
 
-    //2.1 Выбор потомков узла
     public function getDescendant($node)
     {
-        return Category::where('lk', '>', $node->lk)
+        return DB::table(self::getTableName())
+            ->where('lk', '>', $node->lk)
             ->where('rk', '<', $node->rk)
             ->orderBy('lk')
             ->get();
     }
 
-    //3. Выбор родительской "ветки":
     public function getAncestorsNode($node)
     {
-        return Category::where('lk', '<=', $node->lk)
+        return DB::table(self::getTableName())
+            ->where('lk', '<=', $node->lk)
             ->where('rk', '>=', $node->rk)
             ->orderBy('lk')
             ->get();
     }
 
-    //3. Выбор родительской "ветки":
     public function getAncestors($node)
     {
-        return Category::where('lk', '<', $node->lk)
+        return DB::table(self::getTableName())
+            ->where('lk', '<', $node->lk)
             ->where('rk', '>', $node->rk)
             ->orderBy('lk')
             ->get();
     }
 
-    //4. Выбор ветки в которой участвует наш узел:
     public function getEntireBranch($node)
     {
-        return Category::where('rk', '>', $node->lk)
+        return DB::table(self::getTableName())
+            ->where('rk', '>', $node->lk)
             ->where('lk', '<', $node->rk)
             ->orderBy('lk')
             ->get();
     }
 
-    //6. СОЗДАНИЕ УЗЛА:
     public function createNode($node, $name)
     {
 
         Capsule::update('UPDATE categories SET rk = rk + 2, lk = 
-                     IF(lk > ?, lk + 2, lk) WHERE rk >= ?',[$node->rk,$node->rk]);
+                     IF(lk > ?, lk + 2, lk) WHERE rk >= ?', [$node->rk, $node->rk]);
 
         Category::create(['name' => $name,
             'lk' => $node->rk,
@@ -74,19 +77,17 @@ abstract class Trees implements TreesI
             'level' => $node->level + 1]);
     }
 
-    //7.УДАЛЕНИЕ УЗЛА c потомками
     public function deleteNode($node)
     {
         $diapazon = $node->rk - $node->lk + 1;
 
-        Category::where('lk', '>=', $node->lk)
+        DB::table(self::getTableName())
+        ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->delete();
 
-        Capsule::update(' UPDATE categories SET lk = IF(lk > ?, lk - ?, lk),
-                       rk = rk - ? WHERE rk > ?',[$node->lk,$diapazon,$diapazon,$node->rk]);
-
-
+        DB::update(' UPDATE categories SET lk = IF(lk > ?, lk - ?, lk),
+                       rk = rk - ? WHERE rk > ?', [$node->lk, $diapazon, $diapazon, $node->rk]);
     }
 
     public abstract function moveToUp($node, $newParent);

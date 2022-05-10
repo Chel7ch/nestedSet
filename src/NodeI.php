@@ -1,6 +1,6 @@
 <?php
 
-namespace src;
+namespace Chel7ch\NestedSets;
 
 interface NodeI
 {
