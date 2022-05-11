@@ -2,11 +2,8 @@
 
 namespace Chel7ch\NestedSets;
 
-use Chel7ch\NestedSets\Models\Category;
-
-class Node implements NodeI
+class Node
 {
-
     public function prepare($prop)
     {
         if (!empty($prop['id']) &&
@@ -26,7 +23,7 @@ class Node implements NodeI
 
     public function query($key, $value)
     {
-        return Category::where($key, $value)->first();
+        return Trees::getNode($key, $value);
     }
 
 }

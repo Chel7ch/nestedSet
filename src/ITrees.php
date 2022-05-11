@@ -2,7 +2,7 @@
 
 namespace Chel7ch\NestedSets;
 
-interface TreesI
+interface ITrees
 {
 
     public function getTree();

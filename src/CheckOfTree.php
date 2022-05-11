@@ -8,7 +8,7 @@ class CheckOfTree
     private $trees;
 
 
-    public function __construct(TreesI $tree)
+    public function __construct(ITrees $tree)
     {
         $this->trees = $tree->getTree();
     }

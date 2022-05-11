@@ -19,11 +19,11 @@ $node=(new Node)->prepare($prop);
 $tree = new Categories();
 $tree->getEntireBranch($node);
 ```
-#### parent branch:
+#### ancestors of node:
 ```php
 $tree->getAncestors($node);
 ```
-#### parent branch along with a node:
+#### ancestors of the node and node together:
 ```php
 $tree->getAncestorNode($node);
 ```
@@ -39,14 +39,23 @@ $tree->getDescendantNode($node);
 ```php
 $tree->getTree();
 ```
+etc.
 ### Add node
 #### a child node:
 ```php
 $tree->createNode($parantNode, $nodeName);
 ```
+#### rename a node:
+```php
+$tree->renameNode($node, $newName)
+```
 #### delete a node with descendants:
 ```php
 $tree->deleteNode($node);
+```
+#### clear everything:
+```php
+$tree->();
 ```
 ## move a node:
 ```php
@@ -54,6 +63,6 @@ $tree->moveNode($node, $newParent)
 ```
 #### check the integrity of the tree:
 ```php
-$check= new CheckOfTree;
+$check= new CheckOfTree(new Categories);
 $check->inspect();
 ```

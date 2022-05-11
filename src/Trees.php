@@ -2,27 +2,29 @@
 
 namespace Chel7ch\NestedSets;
 
-use Chel7ch\NestedSets\Models\Category;
-use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Support\Facades\DB;
 
-abstract class Trees implements TreesI
+abstract class Trees implements ITrees
 {
-    protected static function getTableName(): string
-    {
-        return 'categories';
-    }
+    protected $tableName ='categories';
 
-    public function getTree(): object
+    public function getTree()
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->orderBy('lk')
             ->get();
     }
 
+    public static function getNode($key, $value): object
+    {
+        return DB::table('categories')
+            ->where($key, $value)
+            ->first();
+    }
+
     public function getDescendantNode($node)
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->orderBy('lk')
@@ -31,7 +33,7 @@ abstract class Trees implements TreesI
 
     public function getDescendant($node)
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->where('lk', '>', $node->lk)
             ->where('rk', '<', $node->rk)
             ->orderBy('lk')
@@ -40,7 +42,7 @@ abstract class Trees implements TreesI
 
     public function getAncestorsNode($node)
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->where('lk', '<=', $node->lk)
             ->where('rk', '>=', $node->rk)
             ->orderBy('lk')
@@ -49,7 +51,7 @@ abstract class Trees implements TreesI
 
     public function getAncestors($node)
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->where('lk', '<', $node->lk)
             ->where('rk', '>', $node->rk)
             ->orderBy('lk')
@@ -58,7 +60,7 @@ abstract class Trees implements TreesI
 
     public function getEntireBranch($node)
     {
-        return DB::table(self::getTableName())
+        return DB::table($this->tableName)
             ->where('rk', '>', $node->lk)
             ->where('lk', '<', $node->rk)
             ->orderBy('lk')
@@ -67,32 +69,46 @@ abstract class Trees implements TreesI
 
     public function createNode($node, $name)
     {
+        DB::update("UPDATE $this->tableName SET rk = rk + 2, lk = 
+                     IF(lk > ?, lk + 2, lk) WHERE rk >= ?", [$node->rk, $node->rk]);
 
-        Capsule::update('UPDATE categories SET rk = rk + 2, lk = 
-                     IF(lk > ?, lk + 2, lk) WHERE rk >= ?', [$node->rk, $node->rk]);
-
-        Category::create(['name' => $name,
+        DB::table($this->tableName)->insert([
+            'name' => $name,
             'lk' => $node->rk,
             'rk' => $node->rk + 1,
-            'level' => $node->level + 1]);
+            'level' => $node->level + 1
+        ]);
     }
 
     public function deleteNode($node)
     {
-        $diapazon = $node->rk - $node->lk + 1;
+        $spread = $node->rk - $node->lk + 1;
 
-        DB::table(self::getTableName())
-        ->where('lk', '>=', $node->lk)
+        DB::table($this->tableName)
+            ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->delete();
 
-        DB::update(' UPDATE categories SET lk = IF(lk > ?, lk - ?, lk),
-                       rk = rk - ? WHERE rk > ?', [$node->lk, $diapazon, $diapazon, $node->rk]);
+        DB::update("UPDATE $this->tableName SET lk = IF(lk > ?, lk - ?, lk), rk = rk - ? WHERE rk > ?",
+            [$node->lk, $spread, $spread, $node->rk]);
     }
 
-    public abstract function moveToUp($node, $newParent);
+    public function renameNode($node, $newName)
+    {
+        DB::table($this->tableName)
+            ->where('lk', $node->lk)
+            ->orWhere('rk', $node->rk)
+            ->orWhere('id', $node->id)
+            ->update(['name' => $newName]);
+    }
 
+    public function cleanTree()
+    {
+        DB::table($this->tableName)->truncate();
+    }
 
-    public abstract function moveToDown($node, $newParent);
+    abstract public function moveToUp($node, $newParent);
+
+    abstract public function moveToDown($node, $newParent);
 
 }
