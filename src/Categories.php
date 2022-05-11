@@ -24,7 +24,7 @@ class Categories extends Trees
         $in = str_repeat('?,', count($arr) - 1) . '?';
         array_unshift($arr, $offsetLevel, $offset, $offset);
 
-        Capsule::update("UPDATE $this->tableName SET rk = IF(rk < ? AND rk > ?,rk + ?,rk),
+        DB::update("UPDATE $this->tableName SET rk = IF(rk < ? AND rk > ?,rk + ?,rk),
                       lk = IF(lk < ? AND lk > ?,lk + ?,lk)",
             [
                 $node->lk,
@@ -35,7 +35,7 @@ class Categories extends Trees
                 $nodeVolume
             ]);
 
-        Capsule::update("UPDATE $this->tableName SET level = level+?,
+        DB::update("UPDATE $this->tableName SET level = level+?,
                       lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
 
     }
@@ -50,7 +50,7 @@ class Categories extends Trees
         $in = str_repeat('?,', count($arr) - 1) . '?';
         array_unshift($arr, $offsetLevel, $offsetDown, $offsetDown);
 
-        Capsule::update("UPDATE $this->tableName SET rk = IF(rk <= ? AND rk > ?,rk - ?,rk),
+        DB::update("UPDATE $this->tableName SET rk = IF(rk <= ? AND rk > ?,rk - ?,rk),
                       lk = IF(lk <= ? AND lk > ?,lk - ?,lk)",
             [
                 $newParent->lk,
@@ -60,7 +60,7 @@ class Categories extends Trees
                 $node->rk,
                 $nodeVolume]);
 
-        Capsule::update("UPDATE $this->tableName SET level = level+?, lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
+        DB::update("UPDATE $this->tableName SET level = level+?, lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
 
     }
 

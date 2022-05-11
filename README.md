@@ -7,12 +7,15 @@ Theory: https://webscript.ru/stories/04/09/01/8197045
 Each node has 3 unique indexes: id , lk and rk.
 To start manipulating the nodes of the tree, we learn 
 the attributes of the node:
-$prop=array('id'=>5, 'lk'=>3, 'rk'=>8);  
-or any part of: 
+```php
+$prop=array('id'=>5, 'lk'=>3, 'rk'=>8); 
+``` 
+or any part of:
+```php
 $prop=array('lk'=>3);
 
 $node=(new Node)->prepare($prop);
-
+```
 ### Select
 #### the entire branch in which our node participates:
 ```php
@@ -39,7 +42,6 @@ $tree->getDescendantNode($node);
 ```php
 $tree->getTree();
 ```
-etc.
 ### Add node
 #### a child node:
 ```php
@@ -59,7 +61,7 @@ $tree->();
 ```
 ## move a node:
 ```php
-$tree->moveNode($node, $newParent)
+$tree->moveNode($node, $newParent);
 ```
 #### check the integrity of the tree:
 ```php
