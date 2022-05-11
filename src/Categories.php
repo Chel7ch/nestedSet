@@ -2,6 +2,8 @@
 
 namespace Chel7ch\NestedSets;
 
+use Illuminate\Support\Facades\DB;
+
 class Categories extends Trees
 {
     public function moveNode($node, $newParent): void
