@@ -43,7 +43,7 @@ $tree->getDescendantNode($node);
 $tree->getTree();
 ```
 ### Add node
-#### a child node:
+#### only child node:
 ```php
 $tree->createNode($parantNode, $nodeName);
 ```
@@ -57,7 +57,7 @@ $tree->deleteNode($node);
 ```
 #### clear everything:
 ```php
-$tree->();
+$tree->cleanTree();
 ```
 ## move a node:
 ```php

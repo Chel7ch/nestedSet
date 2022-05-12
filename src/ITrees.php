@@ -1,6 +1,6 @@
 <?php
 
-namespace Chel7ch\NestedSets;
+namespace Ugu\NestedSets;
 
 interface ITrees
 {

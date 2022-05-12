@@ -1,7 +1,8 @@
 <?php
 
-namespace Chel7ch\NestedSets;
+namespace Ugu\NestedSets;
 
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Support\Facades\DB;
 
 class Categories extends Trees
@@ -13,7 +14,7 @@ class Categories extends Trees
         }elseif ($node->lk < $newParent->lk) {
             $this->moveToDown($node, $newParent);
         }
-        throw new \InvalidArgumentException("Parameters of the parent and child nodes are the same");
+//        throw new \InvalidArgumentException("Parameters of the parent and child nodes are the same");
     }
 
     public function moveToUp($node, $newParent)
@@ -26,7 +27,7 @@ class Categories extends Trees
         $in = str_repeat('?,', count($arr) - 1) . '?';
         array_unshift($arr, $offsetLevel, $offset, $offset);
 
-        DB::update("UPDATE $this->tableName SET rk = IF(rk < ? AND rk > ?,rk + ?,rk),
+        Capsule::update("UPDATE $this->tableName SET rk = IF(rk < ? AND rk > ?,rk + ?,rk),
                       lk = IF(lk < ? AND lk > ?,lk + ?,lk)",
             [
                 $node->lk,
@@ -37,7 +38,7 @@ class Categories extends Trees
                 $nodeVolume
             ]);
 
-        DB::update("UPDATE $this->tableName SET level = level+?,
+        Capsule::update("UPDATE $this->tableName SET level = level+?,
                       lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
 
     }
@@ -52,7 +53,7 @@ class Categories extends Trees
         $in = str_repeat('?,', count($arr) - 1) . '?';
         array_unshift($arr, $offsetLevel, $offsetDown, $offsetDown);
 
-        DB::update("UPDATE $this->tableName SET rk = IF(rk <= ? AND rk > ?,rk - ?,rk),
+        Capsule::update("UPDATE $this->tableName SET rk = IF(rk <= ? AND rk > ?,rk - ?,rk),
                       lk = IF(lk <= ? AND lk > ?,lk - ?,lk)",
             [
                 $newParent->lk,
@@ -62,7 +63,7 @@ class Categories extends Trees
                 $node->rk,
                 $nodeVolume]);
 
-        DB::update("UPDATE $this->tableName SET level = level+?, lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
+        Capsule::update("UPDATE $this->tableName SET level = level+?, lk=lk+?, rk=rk+? WHERE id IN($in)", $arr);
 
     }
 

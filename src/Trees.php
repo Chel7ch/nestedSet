@@ -1,8 +1,8 @@
 <?php
 
-namespace Chel7ch\NestedSets;
+namespace Ugu\NestedSets;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 abstract class Trees implements ITrees
 {
@@ -10,21 +10,21 @@ abstract class Trees implements ITrees
 
     public function getTree()
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->orderBy('lk')
             ->get();
     }
 
     public static function getNode($key, $value): object
     {
-        return DB::table('categories')
+        return Capsule::table('categories')
             ->where($key, $value)
             ->first();
     }
 
     public function getDescendantNode($node)
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->orderBy('lk')
@@ -33,7 +33,7 @@ abstract class Trees implements ITrees
 
     public function getDescendant($node)
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->where('lk', '>', $node->lk)
             ->where('rk', '<', $node->rk)
             ->orderBy('lk')
@@ -42,7 +42,7 @@ abstract class Trees implements ITrees
 
     public function getAncestorsNode($node)
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->where('lk', '<=', $node->lk)
             ->where('rk', '>=', $node->rk)
             ->orderBy('lk')
@@ -51,7 +51,7 @@ abstract class Trees implements ITrees
 
     public function getAncestors($node)
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->where('lk', '<', $node->lk)
             ->where('rk', '>', $node->rk)
             ->orderBy('lk')
@@ -60,7 +60,7 @@ abstract class Trees implements ITrees
 
     public function getEntireBranch($node)
     {
-        return DB::table($this->tableName)
+        return Capsule::table($this->tableName)
             ->where('rk', '>', $node->lk)
             ->where('lk', '<', $node->rk)
             ->orderBy('lk')
@@ -69,10 +69,10 @@ abstract class Trees implements ITrees
 
     public function createNode($node, $name)
     {
-        DB::update("UPDATE $this->tableName SET rk = rk + 2, lk = 
+        Capsule::update("UPDATE $this->tableName SET rk = rk + 2, lk = 
                      IF(lk > ?, lk + 2, lk) WHERE rk >= ?", [$node->rk, $node->rk]);
 
-        DB::table($this->tableName)->insert([
+        Capsule::table($this->tableName)->insert([
             'name' => $name,
             'lk' => $node->rk,
             'rk' => $node->rk + 1,
@@ -84,18 +84,18 @@ abstract class Trees implements ITrees
     {
         $spread = $node->rk - $node->lk + 1;
 
-        DB::table($this->tableName)
+        Capsule::table($this->tableName)
             ->where('lk', '>=', $node->lk)
             ->where('rk', '<=', $node->rk)
             ->delete();
 
-        DB::update("UPDATE $this->tableName SET lk = IF(lk > ?, lk - ?, lk), rk = rk - ? WHERE rk > ?",
+        Capsule::update("UPDATE $this->tableName SET lk = IF(lk > ?, lk - ?, lk), rk = rk - ? WHERE rk > ?",
             [$node->lk, $spread, $spread, $node->rk]);
     }
 
     public function renameNode($node, $newName)
     {
-        DB::table($this->tableName)
+        Capsule::table($this->tableName)
             ->where('lk', $node->lk)
             ->orWhere('rk', $node->rk)
             ->orWhere('id', $node->id)
@@ -104,7 +104,7 @@ abstract class Trees implements ITrees
 
     public function cleanTree()
     {
-        DB::table($this->tableName)->truncate();
+        Capsule::table($this->tableName)->truncate();
     }
 
     abstract public function moveToUp($node, $newParent);
