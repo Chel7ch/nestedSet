@@ -8,6 +8,8 @@ use Ugu\NestedSets\Node;
 class NodeTest extends TestCase
 {
 
+    private $node;
+
     public static function setUpBeforeClass()
     {
         $schema = Capsule::schema();
@@ -21,22 +23,29 @@ class NodeTest extends TestCase
             $table->unsignedInteger('rk');
             $table->unsignedInteger('level');
         });
-    }
 
-    public function setUp()
-    {
         $data = include __DIR__ . '/data/categories.php';
 
         Capsule::table('categories')->insert($data);
 
     }
 
-    public function tearDown()
+    protected function setUp()
+    {
+        $this->node = new Node;
+    }
+
+    protected function tearDown()
+    {
+        $this->node = NULL;
+    }
+
+    public static function tearDownAfterClass(): void
     {
         Capsule::table('categories')->truncate();
     }
 
-    public function additionProvider(): Generator
+    public function nodeProvider(): Generator
     {
 
         $arr = [
@@ -53,16 +62,35 @@ class NodeTest extends TestCase
         }
     }
 
-    /** @dataProvider additionProvider */
+    /** @dataProvider nodeProvider */
     public function testPrepare(array $prop): void
     {
-        $node = new Node;
-        $result = $node->prepare($prop);
+        $result = $this->node->prepare($prop);
 
         $this->assertNotEmpty($result);
         $this->assertIsObject($result);
     }
 
+    public function errorProvider(): Generator
+    {
+        $arr = [
+            [],
+            ['level' => 2],
+            ['name' => '33333', 'level' => 2],
+            ['name' => '55555'],
+            'aa'
+        ];
+        foreach ($arr as $query) {
+            yield [
+                $query,
+            ];
+        }
+    }
 
-
+    /** @dataProvider errorProvider */
+    public function testExeption($prop): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->node->prepare($prop);
+    }
 }
