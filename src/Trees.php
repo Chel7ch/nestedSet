@@ -15,9 +15,9 @@ abstract class Trees implements ITrees
             ->get();
     }
 
-    public static function getNode($key, $value): object
+    public function getNode($key, $value): object
     {
-        return Capsule::table('categories')
+        return Capsule::table($this->tableName)
             ->where($key, $value)
             ->first();
     }

@@ -4,7 +4,7 @@ namespace Ugu\NestedSets;
 
 class Node
 {
-    public function prepare($prop)
+    public function prepare($prop): object
     {
         if (!empty($prop['id']) &&
             null !== $node = $this->query('id', $prop['id'])) {
@@ -21,9 +21,9 @@ class Node
         throw new \InvalidArgumentException("Missing or wrong  input parameters ");
     }
 
-    public function query($key, $value)
+    public function query($key, $value): object
     {
-        return Trees::getNode($key, $value);
+        return (new Categories)->getNode($key, $value);
     }
 
 }
