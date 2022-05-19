@@ -14,10 +14,10 @@ class Categories extends Trees
         }elseif ($node->lk < $newParent->lk) {
             $this->moveToDown($node, $newParent);
         }
-//        throw new \InvalidArgumentException("Parameters of the parent and child nodes are the same");
+        throw new \InvalidArgumentException("Parameters of the parent and child nodes are the same");
     }
 
-    public function moveToUp($node, $newParent)
+    public function moveToUp($node, $newParent):void
     {
         $nodeVolume = $node->rk - $node->lk + 1;
         $offset = $newParent->lk - $node->lk + 1;
@@ -43,7 +43,7 @@ class Categories extends Trees
 
     }
 
-    public function moveToDown($node, $newParent)
+    public function moveToDown($node, $newParent):void
     {
         $nodeVolume = $node->rk - $node->lk + 1;
         $offsetDown = $newParent->lk - $node->lk + 1 - $nodeVolume;
@@ -67,8 +67,9 @@ class Categories extends Trees
 
     }
 
-    private function prepareIn($node)
+    private function prepareIn($node): array
     {
+        $arr=array();
         foreach ($this->getDescendantNode($node) as $item) {
             $arr[] = $item->id;
         }

@@ -16,7 +16,7 @@ class CategoriesTest extends TestCase
      */
     private $stub;
 
-    public static function setUpBeforeClass():void
+    public static function setUpBeforeClass(): void
     {
         $schema = Capsule::schema();
 
