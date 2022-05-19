@@ -11,7 +11,12 @@ class CategoriesTest extends TestCase
 {
     public $tree;
 
-    public static function setUpBeforeClass()
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|Node
+     */
+    private $stub;
+
+    public static function setUpBeforeClass():void
     {
         $schema = Capsule::schema();
 
@@ -33,6 +38,12 @@ class CategoriesTest extends TestCase
     protected function setUp()
     {
         $this->tree = new Categories();
+
+        $obj = (object)array('id' => 16, 'name' => 01600, 'lk' => 28, 'rk' => 29, 'level' => 4);
+
+        $this->stub = $this->createMock(Node::class);
+        $this->stub->method('prepare')
+            ->willReturn($obj);
     }
 
     protected function tearDown()
@@ -56,16 +67,54 @@ class CategoriesTest extends TestCase
         $this->assertEmpty($check->maxRightKey());
     }
 
-    public function testGetDescendantNode(): void
+    public function nodeProvider(): Generator
     {
-        $property = array('name' => '55555', 'lk' => 3, 'rk' => 8, 'level' => 3);
+        $arr = [
+            ['lk' => 2, 'rk' => 32, 'level' => 1],
+            ['rk' => 22],
+        ];
+        foreach ($arr as $query) {
+            yield [
+                $query,
+            ];
+        }
+    }
 
-        $node = new Node;
-        $z = $node->prepare($property);
-        $result = $this->tree->getDescendantNode($z);
+    /** @dataProvider nodeProvider */
+    public function testGetDescendantNode(array $prop): void
+    {
+        $result = $this->tree->getDescendantNode($this->stub->prepare($prop));
 
         $this->assertIsObject($result);
         $this->assertIsIterable($result);
     }
+
+    /** @dataProvider nodeProvider */
+    public function testGetDescendant(array $prop): void
+    {
+        $result = $this->tree->getDescendant($this->stub->prepare($prop));
+
+        $this->assertIsObject($result);
+        $this->assertIsIterable($result);
+    }
+
+    /** @dataProvider nodeProvider */
+    public function testGetAncestorsNode(array $prop): void
+    {
+        $result = $this->tree->getAncestorsNode($this->stub->prepare($prop));
+
+        $this->assertIsObject($result);
+        $this->assertIsIterable($result);
+    }
+
+    /** @dataProvider nodeProvider */
+    public function testGetAncestors(array $prop): void
+    {
+        $result = $this->tree->getAncestors($this->stub->prepare($prop));
+
+        $this->assertIsObject($result);
+        $this->assertIsIterable($result);
+    }
+
 
 }

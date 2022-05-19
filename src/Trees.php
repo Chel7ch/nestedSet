@@ -3,6 +3,7 @@
 namespace Ugu\NestedSets;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Collection;
 
 abstract class Trees implements ITrees
 {
@@ -22,7 +23,7 @@ abstract class Trees implements ITrees
             ->first();
     }
 
-    public function getDescendantNode($node)
+    public function getDescendantNode($node):Collection
     {
         return Capsule::table($this->tableName)
             ->where('lk', '>=', $node->lk)
@@ -31,7 +32,7 @@ abstract class Trees implements ITrees
             ->get();
     }
 
-    public function getDescendant($node)
+    public function getDescendant($node): Collection
     {
         return Capsule::table($this->tableName)
             ->where('lk', '>', $node->lk)
@@ -40,7 +41,7 @@ abstract class Trees implements ITrees
             ->get();
     }
 
-    public function getAncestorsNode($node)
+    public function getAncestorsNode($node): Collection
     {
         return Capsule::table($this->tableName)
             ->where('lk', '<=', $node->lk)
@@ -49,7 +50,7 @@ abstract class Trees implements ITrees
             ->get();
     }
 
-    public function getAncestors($node)
+    public function getAncestors($node): Collection
     {
         return Capsule::table($this->tableName)
             ->where('lk', '<', $node->lk)
@@ -58,7 +59,7 @@ abstract class Trees implements ITrees
             ->get();
     }
 
-    public function getEntireBranch($node)
+    public function getEntireBranch($node): Collection
     {
         return Capsule::table($this->tableName)
             ->where('rk', '>', $node->lk)
@@ -80,7 +81,7 @@ abstract class Trees implements ITrees
         ]);
     }
 
-    public function deleteNode($node)
+    public function deleteNode($node): void
     {
         $spread = $node->rk - $node->lk + 1;
 
@@ -93,7 +94,7 @@ abstract class Trees implements ITrees
             [$node->lk, $spread, $spread, $node->rk]);
     }
 
-    public function renameNode($node, $newName)
+    public function renameNode($node, $newName): void
     {
         Capsule::table($this->tableName)
             ->where('lk', $node->lk)
@@ -102,7 +103,7 @@ abstract class Trees implements ITrees
             ->update(['name' => $newName]);
     }
 
-    public function cleanTree()
+    public function cleanTree(): void
     {
         Capsule::table($this->tableName)->truncate();
     }
